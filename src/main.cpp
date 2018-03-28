@@ -19,6 +19,9 @@
 #include "page_admin.h"
 #include "page_style.css.h"
 
+#define ACCESS_POINT_NAME  "KoffieID"				
+#define ACCESS_POINT_PASSWORD  "KoffieConfig" 
+
 const char* host = "google.com";
 
 void readWebsite();
@@ -30,21 +33,32 @@ void setup()
     Serial.begin(9600);
     delay(10);
 
+    /*
+    for (int i = 0 ; i < 512 ; i++) {
+    EEPROM.write(i, 0);
+    }
+    EEPROM.commit();
+    */
+    
+
     if (!SPIFFS.begin())
         Serial.println("Failed to mount file system");
 
     if (!ReadConfig())
     {
         WiFi.mode(WIFI_AP);
-		WiFi.softAP("KoffieID" , "KoffieConfig");
+		WiFi.softAP(ACCESS_POINT_NAME , ACCESS_POINT_PASSWORD);
         
         IPAddress myIP = WiFi.softAPIP(); //Get IP address
         Serial.print("HotSpot IP: ");
         Serial.println(myIP);
 
 
-        server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+        server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+            request->send(200, "text/html", PAGE_NetworkConfiguration);
+        });
 
+        server.on("/", HTTP_POST, [](AsyncWebServerRequest *request) {
             int args = request->args();
 
             if (args != 0)
@@ -59,9 +73,8 @@ void setup()
 
                 WriteConfig();
             }
-            else
-                request->send(200, "text/html", PAGE_NetworkConfiguration);
         });
+
         server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
             request->send(200, "text/css", PAGE_Style_css);
         });
@@ -69,7 +82,11 @@ void setup()
 
         server.begin();
 
-        Serial.println("Please connect to KoffieID WiFi - password: KoffieConfig");
+        String connectMessage = "Please connect to $ssid WiFi - password:$password";
+        connectMessage.replace("$ssid", ACCESS_POINT_NAME);
+        connectMessage.replace("$password", ACCESS_POINT_PASSWORD);
+
+        Serial.println(connectMessage);
         return;
     }
 
@@ -100,9 +117,6 @@ void setup()
 
 void readWebsite()
 {
-    int value = 0;
-    ++value;
-
     Serial.print("connecting to ");
     Serial.println(host);
 
@@ -146,12 +160,5 @@ void readWebsite()
 
 void loop()
 {
-    //server.handleClient();
 
-    //readWebsite();
-    //delay(5000);
-}
-
-void handleRoot() {
-  //server.send(200, "text/html", "<h1>You are connected</h1>");
 }

@@ -10,10 +10,10 @@ const char PAGE_NetworkConfiguration[] PROGMEM = R"=====(
 <strong>Network Configuration</strong>
 <hr>
 Connect to Router with these settings:<br>
-<form action="" method="get">
+<form action="" method="post">
 <table border="0"  cellspacing="0" cellpadding="3" style="width:310px" >
 <tr><td align="right">SSID:</td><td><input type="text" id="ssid" name="ssid" value=""></td></tr>
-<tr><td align="right">Password:</td><td><input type="text" id="password" name="password" value=""></td></tr>
+<tr><td align="right">Password:</td><td><input type="password" id="password" name="password" value=""></td></tr>
 <tr><td colspan="2" align="center"><input type="submit" style="width:150px" class="btn btn--m btn--blue" value="Save"></td></tr>
 </table>
 </form>
