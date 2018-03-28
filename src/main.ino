@@ -86,8 +86,8 @@ String readWebsite(String UID)
     url += "/api/koffieid.php?uid=";
     url += UID;
 
-    http.begin(url);                //Specify the URL
-    int httpCode = http.GET();      //Make the request
+    http.begin(url);           //Specify the URL
+    int httpCode = http.GET(); //Make the request
 
     if (httpCode > 0)
         return http.getString();
@@ -120,8 +120,6 @@ void loop()
     if (!rfidUid.equals(lastUid))
     {
         Serial.println(F("Card scanned"));
-        //Serial.println(rfidUid);
-
         Serial.println(readWebsite(rfidUid));
 
         lastUid = rfidUid;
