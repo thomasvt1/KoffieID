@@ -119,8 +119,8 @@ void loop()
 
     if (!rfidUid.equals(lastUid))
     {
-        Serial.print(F("Card UID:"));
-        Serial.println(rfidUid);
+        Serial.println(F("Card scanned"));
+        //Serial.println(rfidUid);
 
         Serial.println(readWebsite(rfidUid));
 
