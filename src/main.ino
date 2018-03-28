@@ -124,6 +124,7 @@ void readWebsite()
     Serial.println("end of session");
 }
 
+String lastUid = "";
 void loop()
 {
     if (!mfrc522.PICC_IsNewCardPresent())
@@ -133,14 +134,21 @@ void loop()
     if (!mfrc522.PICC_ReadCardSerial())
         return;
 
-    // Dump debug info about the card; PICC_HaltA() is automatically called
+    byte readCard[4];
 
-    Serial.print(F("Card UID:"));
+    String rfidUid = "";
     for (byte i = 0; i < mfrc522.uid.size; i++)
     {
-        Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-        Serial.print(mfrc522.uid.uidByte[i], HEX);
+        rfidUid += String(mfrc522.uid.uidByte[i] < 0x10 ? "0" : "");
+        rfidUid += String(mfrc522.uid.uidByte[i], HEX);
     }
-    Serial.println();
+
+    if (!rfidUid.equals(lastUid))
+    {
+        Serial.print(F("Card UID:"));
+        Serial.println(rfidUid);
+        lastUid = rfidUid;
+    }
+
     mfrc522.PICC_HaltA();
 }
