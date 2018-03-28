@@ -18,9 +18,6 @@
 #include "helpers.h"
 #include "global.h"
 
-#include "page_admin.h"
-#include "page_style.css.h"
-
 const char *host = "thomasvt.xyz";
 
 void startWiFiSetup();
