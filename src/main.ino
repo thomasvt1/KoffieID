@@ -28,6 +28,11 @@ void startWiFiSetup();
 void startSoftAP();
 void setupWebServer();
 
+#define RST_PIN 22 // Reset pin
+#define SS_PIN 21   // Slave select pin
+
+MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
+
 void setup()
 {
     EEPROM.begin(512);
@@ -39,11 +44,6 @@ void setup()
         startWiFiSetup();
         return;
     }
-
-    const int RST_PIN = 22; // Reset pin
-    const int SS_PIN = 21;  // Slave select pin
-
-    MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
 
     // We start by connecting to a WiFi network
 
@@ -75,6 +75,10 @@ void setup()
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
+
+    SPI.begin();			 // Init SPI bus
+	mfrc522.PCD_Init();		 // Init MFRC522
+	mfrc522.PCD_DumpVersionToSerial();	// Show details of PCD - MFRC522 Card Reader details
 }
 
 void readWebsite()
@@ -125,4 +129,16 @@ void readWebsite()
 
 void loop()
 {
+
+    if ( ! mfrc522.PICC_IsNewCardPresent()) {
+		return;
+	}
+
+	// Select one of the cards
+	if ( ! mfrc522.PICC_ReadCardSerial()) {
+		return;
+	}
+
+	// Dump debug info about the card; PICC_HaltA() is automatically called
+	mfrc522.PICC_DumpToSerial(&(mfrc522.uid));
 }
