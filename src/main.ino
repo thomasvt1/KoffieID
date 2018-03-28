@@ -73,9 +73,9 @@ void setup()
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
 
-    SPI.begin();			 // Init SPI bus
-	mfrc522.PCD_Init();		 // Init MFRC522
-	mfrc522.PCD_DumpVersionToSerial();	// Show details of PCD - MFRC522 Card Reader details
+    SPI.begin();                       // Init SPI bus
+    mfrc522.PCD_Init();                // Init MFRC522
+    mfrc522.PCD_DumpVersionToSerial(); // Show details of PCD - MFRC522 Card Reader details
 }
 
 void readWebsite()
@@ -126,16 +126,21 @@ void readWebsite()
 
 void loop()
 {
+    if (!mfrc522.PICC_IsNewCardPresent())
+        return;
 
-    if ( ! mfrc522.PICC_IsNewCardPresent()) {
-		return;
-	}
+    // Select one of the cards
+    if (!mfrc522.PICC_ReadCardSerial())
+        return;
 
-	// Select one of the cards
-	if ( ! mfrc522.PICC_ReadCardSerial()) {
-		return;
-	}
+    // Dump debug info about the card; PICC_HaltA() is automatically called
 
-	// Dump debug info about the card; PICC_HaltA() is automatically called
-	mfrc522.PICC_DumpToSerial(&(mfrc522.uid));
+    Serial.print(F("Card UID:"));
+    for (byte i = 0; i < mfrc522.uid.size; i++)
+    {
+        Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
+        Serial.print(mfrc522.uid.uidByte[i], HEX);
+    }
+    Serial.println();
+    mfrc522.PICC_HaltA();
 }
