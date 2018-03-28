@@ -5,16 +5,17 @@
 
 AsyncWebServer server(80);
 
-struct strConfig {
+struct strConfig
+{
 	String ssid;
 	String password;
 
-}   config;
+} config;
 
 boolean ReadConfig()
 {
 	Serial.println("Reading Configuration");
-	if (EEPROM.read(0) == 'C' && EEPROM.read(1) == 'F'  && EEPROM.read(2) == 'G' )
+	if (EEPROM.read(0) == 'C' && EEPROM.read(1) == 'F' && EEPROM.read(2) == 'G')
 	{
 		Serial.println("Configuration Found!");
 
@@ -22,7 +23,6 @@ boolean ReadConfig()
 		config.password = ReadStringFromEEPROM(96);
 
 		return true;
-		
 	}
 	else
 	{
@@ -34,9 +34,9 @@ boolean ReadConfig()
 void WriteConfig()
 {
 	Serial.println("Writing Config");
-	EEPROM.write(0,'C');
-	EEPROM.write(1,'F');
-	EEPROM.write(2,'G');
+	EEPROM.write(0, 'C');
+	EEPROM.write(1, 'F');
+	EEPROM.write(2, 'G');
 
 	WriteStringToEEPROM(64, config.ssid);
 	WriteStringToEEPROM(96, config.password);

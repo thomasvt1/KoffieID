@@ -6,54 +6,60 @@
 #include "page_admin.h"
 #include "page_style.css.h"
 
-#define ACCESS_POINT_NAME  "KoffieID"				
-#define ACCESS_POINT_PASSWORD  "KoffieConfig" 
+#define ACCESS_POINT_NAME "KoffieID"
+#define ACCESS_POINT_PASSWORD "KoffieConfig"
 
-void setupWiFi()
+void startSoftAP()
+{
+    WiFi.softAP(ACCESS_POINT_NAME, ACCESS_POINT_PASSWORD);
+
+    IPAddress myIP = WiFi.softAPIP(); //Get IP address
+    Serial.print("HotSpot IP: ");
+    Serial.println(myIP);
+}
+
+void setupWebServer()
 {
 
-WiFi.mode(WIFI_AP);
-		WiFi.softAP(ACCESS_POINT_NAME , ACCESS_POINT_PASSWORD);
-        
-        IPAddress myIP = WiFi.softAPIP(); //Get IP address
-        Serial.print("HotSpot IP: ");
-        Serial.println(myIP);
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/html", PAGE_NetworkConfiguration);
+    });
 
+    server.on("/", HTTP_POST, [](AsyncWebServerRequest *request) {
+        int args = request->args();
 
-        server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-            request->send(200, "text/html", PAGE_NetworkConfiguration);
-        });
+        if (args != 0)
+        {
+            request->send(200, "text/html", PAGE_WaitAndReload);
 
-        server.on("/", HTTP_POST, [](AsyncWebServerRequest *request) {
-            int args = request->args();
+            String ssid = request->arg("ssid");
+            String password = request->arg("password");
 
-            if (args != 0)
-            {
-                request->send(200, "text/html", PAGE_WaitAndReload);
+            config.ssid = ssid;
+            config.password = password;
 
-                String ssid = request->arg("ssid");
-                String password = request->arg("password");
+            WriteConfig();
+        }
+    });
 
-                config.ssid = ssid;
-                config.password = password;
+    server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/css", PAGE_Style_css);
+    });
 
-                WriteConfig();
-            }
-        });
+    server.begin();
+}
 
-        server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
-            request->send(200, "text/css", PAGE_Style_css);
-        });
-        
+void startWiFiSetup()
+{
 
-        server.begin();
+    WiFi.mode(WIFI_AP);
+    startSoftAP();
 
-        String connectMessage = "Please connect to $ssid WiFi - password:$password";
-        connectMessage.replace("$ssid", ACCESS_POINT_NAME);
-        connectMessage.replace("$password", ACCESS_POINT_PASSWORD);
+    setupWebServer();
 
-        Serial.println(connectMessage);
-        return;
+    String connectMessage = "Please connect to $ssid WiFi - password:$password";
+    connectMessage.replace("$ssid", ACCESS_POINT_NAME);
+    connectMessage.replace("$password", ACCESS_POINT_PASSWORD);
 
-
+    Serial.println(connectMessage);
 }

@@ -9,8 +9,8 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <EEPROM.h>
-#include <SPI.h>      // RC522 Module uses SPI protocol
-#include <MFRC522.h>  // Library for Mifare RC522 Devices
+#include <SPI.h>     // RC522 Module uses SPI protocol
+#include <MFRC522.h> // Library for Mifare RC522 Devices
 #include <ESPAsyncWebServer.h>
 
 #include "helpers.h"
@@ -19,13 +19,11 @@
 #include "page_admin.h"
 #include "page_style.css.h"
 
-#define ACCESS_POINT_NAME  "KoffieID"				
-#define ACCESS_POINT_PASSWORD  "KoffieConfig" 
-
-const char* host = "google.com";
+const char *host = "google.com";
 
 void readWebsite();
 void handleRoot();
+void startWiFiSetup();
 
 void setup()
 {
@@ -42,53 +40,14 @@ void setup()
 
     if (!ReadConfig())
     {
-        WiFi.mode(WIFI_AP);
-		WiFi.softAP(ACCESS_POINT_NAME , ACCESS_POINT_PASSWORD);
-        
-        IPAddress myIP = WiFi.softAPIP(); //Get IP address
-        Serial.print("HotSpot IP: ");
-        Serial.println(myIP);
 
-
-        server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-            request->send(200, "text/html", PAGE_NetworkConfiguration);
-        });
-
-        server.on("/", HTTP_POST, [](AsyncWebServerRequest *request) {
-            int args = request->args();
-
-            if (args != 0)
-            {
-                request->send(200, "text/html", PAGE_WaitAndReload);
-
-                String ssid = request->arg("ssid");
-                String password = request->arg("password");
-
-                config.ssid = ssid;
-                config.password = password;
-
-                WriteConfig();
-            }
-        });
-
-        server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
-            request->send(200, "text/css", PAGE_Style_css);
-        });
-        
-
-        server.begin();
-
-        String connectMessage = "Please connect to $ssid WiFi - password:$password";
-        connectMessage.replace("$ssid", ACCESS_POINT_NAME);
-        connectMessage.replace("$password", ACCESS_POINT_PASSWORD);
-
-        Serial.println(connectMessage);
+        startWiFiSetup();
         return;
     }
 
     const int RST_PIN = 22; // Reset pin
-    const int SS_PIN = 21; // Slave select pin
- 
+    const int SS_PIN = 21;  // Slave select pin
+
     MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
 
     // We start by connecting to a WiFi network
@@ -98,7 +57,8 @@ void setup()
 
     WiFi.begin(config.ssid.c_str(), config.password.c_str());
 
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED)
+    {
         delay(500);
         Serial.print(".");
     }
@@ -107,8 +67,6 @@ void setup()
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
-
-    
 }
 
 void readWebsite()
@@ -119,7 +77,8 @@ void readWebsite()
     // Use WiFiClient class to create TCP connections
     WiFiClient client;
     const int httpPort = 80;
-    if (!client.connect(host, httpPort)) {
+    if (!client.connect(host, httpPort))
+    {
         Serial.println("connection failed");
         return;
     }
@@ -135,8 +94,10 @@ void readWebsite()
                  "Host: " + host + "\r\n" +
                  "Connection: close\r\n\r\n");
     unsigned long timeout = millis();
-    while (client.available() == 0) {
-        if (millis() - timeout > 5000) {
+    while (client.available() == 0)
+    {
+        if (millis() - timeout > 5000)
+        {
             Serial.println(">>> Client Timeout !");
             client.stop();
             return;
@@ -144,17 +105,16 @@ void readWebsite()
     }
 
     // Read all the lines of the reply from server and print them to Serial
-    while(client.available()) {
+    while (client.available())
+    {
         String line = client.readStringUntil('\r');
         Serial.print(line);
     }
 
     Serial.println();
     Serial.println("end of session");
-
 }
 
 void loop()
 {
-
 }
