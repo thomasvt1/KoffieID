@@ -20,7 +20,6 @@ void startSoftAP()
 
 void setupWebServer()
 {
-
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "text/html", PAGE_NetworkConfiguration);
     });
@@ -38,6 +37,8 @@ void setupWebServer()
             config.ssid = ssid;
             config.password = password;
 
+            delay(500);
+
             WriteConfig();
         }
     });
@@ -51,7 +52,6 @@ void setupWebServer()
 
 void startWiFiSetup()
 {
-
     WiFi.mode(WIFI_AP);
     startSoftAP();
 

@@ -35,6 +35,5 @@ function load(e,t,n){if("js"==t){var a=document.createElement("script");a.src=e,
 )=====";
 
 const char PAGE_WaitAndReload[] PROGMEM = R"=====(
-<meta http-equiv="refresh" content="5; URL=/">
 Please Wait....Configuring and Restarting.
 )=====";

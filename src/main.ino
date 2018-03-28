@@ -23,7 +23,10 @@ const char *host = "google.com";
 
 void readWebsite();
 void handleRoot();
+
 void startWiFiSetup();
+void startSoftAP();
+void setupWebServer();
 
 void setup()
 {
@@ -31,16 +34,8 @@ void setup()
     Serial.begin(9600);
     delay(10);
 
-    /*
-    for (int i = 0 ; i < 512 ; i++) {
-    EEPROM.write(i, 0);
-    }
-    EEPROM.commit();
-    */
-
     if (!ReadConfig())
     {
-
         startWiFiSetup();
         return;
     }
@@ -57,11 +52,24 @@ void setup()
 
     WiFi.begin(config.ssid.c_str(), config.password.c_str());
 
+    int tick = 0;
     while (WiFi.status() != WL_CONNECTED)
     {
+        if (tick == 60)
+        {
+            Serial.println();
+            Serial.println("No network has been found in 30 seconds! - Enabling setup aswell!");
+            WiFi.mode(WIFI_AP_STA);
+            startSoftAP();
+            setupWebServer();
+        }
+
         delay(500);
         Serial.print(".");
+        tick++;
     }
+
+    WiFi.mode(WIFI_STA);
 
     Serial.println("");
     Serial.println("WiFi connected");

@@ -33,7 +33,7 @@ boolean ReadConfig()
 
 void WriteConfig()
 {
-	Serial.println("Writing Config");
+	Serial.println("\nWriting Config");
 	EEPROM.write(0, 'C');
 	EEPROM.write(1, 'F');
 	EEPROM.write(2, 'G');
