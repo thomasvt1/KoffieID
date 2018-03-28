@@ -7,15 +7,15 @@
  */
 
 #include <Arduino.h>
-#include "FS.h"
-#include "SPIFFS.h"
 #include <WiFi.h>
 #include <EEPROM.h>
-#include <SPI.h>        // RC522 Module uses SPI protocol
+#include <SPI.h>      // RC522 Module uses SPI protocol
 #include <MFRC522.h>  // Library for Mifare RC522 Devices
 #include <ESPAsyncWebServer.h>
 
+#include "helpers.h"
 #include "global.h"
+
 #include "page_admin.h"
 #include "page_style.css.h"
 
@@ -39,10 +39,6 @@ void setup()
     }
     EEPROM.commit();
     */
-    
-
-    if (!SPIFFS.begin())
-        Serial.println("Failed to mount file system");
 
     if (!ReadConfig())
     {
