@@ -1,13 +1,13 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+AsyncWebServer server(80);
+
 struct strConfig {
 	String ssid;
 	String password;
 
 }   config;
-
-AsyncWebServer server(80);
 
 boolean ReadConfig()
 {
