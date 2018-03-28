@@ -28,10 +28,7 @@ void startWiFiSetup();
 void startSoftAP();
 void setupWebServer();
 
-#define RST_PIN 22 // Reset pin
-#define SS_PIN 21   // Slave select pin
-
-MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
+MFRC522 mfrc522; // Create MFRC522 instance
 
 void setup()
 {
