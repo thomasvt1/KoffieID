@@ -10,7 +10,7 @@
 #include "FS.h"
 #include "SPIFFS.h"
 #include <WiFi.h>
-#include <EEPROM.h>     // We are going to read and write PICC's UIDs from/to EEPROM
+#include <EEPROM.h>
 #include <SPI.h>        // RC522 Module uses SPI protocol
 #include <MFRC522.h>  // Library for Mifare RC522 Devices
 #include <ESPAsyncWebServer.h>
