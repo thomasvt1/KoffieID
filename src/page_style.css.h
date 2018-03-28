@@ -1,3 +1,5 @@
+#pragma once
+
 const char PAGE_Style_css[] PROGMEM = R"=====(
 body { color: #000000; font-family: avenir, helvetica, arial, sans-serif;  letter-spacing: 0.15em;} 
 hr {    background-color: #eee;    border: 0 none;   color: #eee;    height: 1px; } 

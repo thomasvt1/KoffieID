@@ -1,5 +1,5 @@
-#ifndef HELPERS_H
-#define HELPERS_H
+#pragma once
+#include <EEPROM.h>
 
 void WriteStringToEEPROM(int beginaddress, String string)
 {
@@ -27,4 +27,3 @@ String ReadStringFromEEPROM(int beginaddress)
 	}
 	return retString;
 }
-#endif

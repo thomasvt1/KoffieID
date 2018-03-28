@@ -1,6 +1,4 @@
-#include <ESPAsyncWebServer.h>
-#include "global.h"
-
+#pragma once
 //
 //  HTML PAGE
 //

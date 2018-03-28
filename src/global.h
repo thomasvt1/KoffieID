@@ -1,5 +1,7 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#pragma once
+#include <Arduino.h>
+#include <EEPROM.h>
+#include <ESPAsyncWebServer.h>
 
 AsyncWebServer server(80);
 
@@ -24,7 +26,7 @@ boolean ReadConfig()
 	}
 	else
 	{
-		Serial.println("Configuration NOT FOUND!!!!");
+		Serial.println("Configuration NOT FOUND");
 		return false;
 	}
 }
@@ -42,4 +44,3 @@ void WriteConfig()
 	EEPROM.commit();
 	ESP.restart();
 }
-#endif
