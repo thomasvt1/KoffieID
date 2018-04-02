@@ -31,12 +31,11 @@ String ReadStringFromEEPROM(int beginaddress)
 
 boolean arrayIncludeElement(int array[], int element)
 {
-    int max = sizeof(&array) / sizeof(int);
-    Serial.print("Array size: ");
-    Serial.println(max);
+    //int max = sizeof(&array) / sizeof(&array[0]);
+    int max = sizeof(&array) - 1;
+
     for (int i = 0; i < max; i++)
     {
-        Serial.println("loop!");
         if (array[i] == element)
             return true;
     }

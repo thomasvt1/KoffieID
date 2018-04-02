@@ -15,6 +15,8 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 
+#include <Preferences.h> //TODO: WIP
+
 #include "helpers.h"
 #include "global.h"
 
@@ -25,12 +27,15 @@ void startSoftAP();
 void setupWebServer();
 
 MFRC522 mfrc522; // Create MFRC522 instance
+Preferences preferences;
 
 void setup()
 {
     EEPROM.begin(512);
     Serial.begin(9600);
     delay(10);
+
+    preferences.begin("KoffieID", false);
 
     if (!ReadConfig())
     {
@@ -51,7 +56,7 @@ void setup()
         if (tick == 60)
         {
             Serial.println();
-            Serial.println("No network has been found in 30 seconds! - Enabling setup aswell!");
+            Serial.println(F("No network has been found in 30 seconds! - Enabling setup aswell!"));
             WiFi.mode(WIFI_AP_STA);
             startSoftAP();
             setupWebServer();
@@ -64,9 +69,9 @@ void setup()
 
     WiFi.mode(WIFI_STA);
 
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
+    Serial.println();
+    Serial.println(F("WiFi connected"));
+    Serial.println(F("IP address: "));
     Serial.println(WiFi.localIP());
 
     SPI.begin();                       // Init SPI bus
@@ -89,7 +94,7 @@ String readWebsite(String UID)
     if (httpCode > 0)
         return http.getString();
     else
-        Serial.println("Error on HTTP request");
+        Serial.println(F("Error on HTTP request"));
 
     http.end(); //Free the resources
     return "";
@@ -114,31 +119,43 @@ void loop()
         rfidUid += String(mfrc522.uid.uidByte[i], HEX);
     }
 
-    int allowedLEDpins[] = {12, 13};
+    int disallowedPins[] = {5, 18, 19, 22, 23};
 
     if (!rfidUid.equals(lastUid))
     {
-        Serial.println(F("Card scanned"));
+        Serial.print(F("Card scanned - "));
         String in = readWebsite(rfidUid);
 
+        lastUid = rfidUid;
+
+        if (in.length() == 0)
+        {
+            Serial.println(F("API returned empty response"));
+            return;
+        }
+
         int x = in.toInt();
-        Serial.println(x);
+        Serial.println(in);
 
-        Serial.print("arrayIncludeElement: ");
-        Serial.println(arrayIncludeElement(allowedLEDpins, x));
-
-        if (arrayIncludeElement(allowedLEDpins, x))
+        if (x < 1 || x > 35)     //Check if the given pin# is within the range of our ESP32
+        {
+            Serial.println(F("API tried to call pin thatis not in range!"));
+        }
+        else if (arrayIncludeElement(disallowedPins, x))    //Check if the array is in the blacklist - for example pins used by the RFID reader.
+        {
+            Serial.println(F("API tried to call pin that is in blacklist!"));
+        }
+        else
         {
             pinMode(x, OUTPUT);
             digitalWrite(x, HIGH);
             delay(2000);
             digitalWrite(x, LOW);
         }
-        else
-            Serial.println("API tried to call pin that was not included!");
-
-        lastUid = rfidUid;
     }
-
+    else
+    {
+        Serial.println(F("This tag has already been scanned!"));
+    }
     mfrc522.PICC_HaltA();
 }
