@@ -28,3 +28,17 @@ String ReadStringFromEEPROM(int beginaddress)
     }
     return retString;
 }
+
+boolean arrayIncludeElement(int array[], int element)
+{
+    int max = sizeof(&array) / sizeof(int);
+    Serial.print("Array size: ");
+    Serial.println(max);
+    for (int i = 0; i < max; i++)
+    {
+        Serial.println("loop!");
+        if (array[i] == element)
+            return true;
+    }
+    return false;
+}

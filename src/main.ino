@@ -114,10 +114,28 @@ void loop()
         rfidUid += String(mfrc522.uid.uidByte[i], HEX);
     }
 
+    int allowedLEDpins[] = {12, 13};
+
     if (!rfidUid.equals(lastUid))
     {
         Serial.println(F("Card scanned"));
-        Serial.println(readWebsite(rfidUid));
+        String in = readWebsite(rfidUid);
+
+        int x = in.toInt();
+        Serial.println(x);
+
+        Serial.print("arrayIncludeElement: ");
+        Serial.println(arrayIncludeElement(allowedLEDpins, x));
+
+        if (arrayIncludeElement(allowedLEDpins, x))
+        {
+            pinMode(x, OUTPUT);
+            digitalWrite(x, HIGH);
+            delay(2000);
+            digitalWrite(x, LOW);
+        }
+        else
+            Serial.println("API tried to call pin that was not included!");
 
         lastUid = rfidUid;
     }
