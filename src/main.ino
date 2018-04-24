@@ -29,10 +29,13 @@ void setupWebServer();
 MFRC522 mfrc522; // Create MFRC522 instance
 Preferences preferences;
 
+HardwareSerial Serial1(1);
+
 void setup()
 {
     EEPROM.begin(512);
     Serial.begin(9600);
+    Serial1.begin(115200);
     delay(10);
 
     preferences.begin("KoffieID", false);
@@ -77,6 +80,11 @@ void setup()
     SPI.begin();                       // Init SPI bus
     mfrc522.PCD_Init();                // Init MFRC522
     mfrc522.PCD_DumpVersionToSerial(); // Show details of PCD - MFRC522 Card Reader details
+
+    //TODO: Remove this when done with coding.
+    WiFi.mode(WIFI_AP_STA);
+    startSoftAP();
+    setupWebServer();
 }
 
 String readWebsite(String UID)
