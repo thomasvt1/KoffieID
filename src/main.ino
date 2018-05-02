@@ -1,21 +1,8 @@
-/*
- *  This sketch sends data via HTTP GET requests.
- *
- *  You need to get streamId and privateKey at data.sparkfun.com and paste them
- *  below. Or just customize this script to talk to other HTTP servers.
- *
- */
-
 #include <Arduino.h>
 #include <WiFi.h>
-#include <EEPROM.h>
 #include <SPI.h>     // RC522 Module uses SPI protocol
 #include <MFRC522.h> // Library for Mifare RC522 Devices
-#include <ESPAsyncWebServer.h>
-#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
-
-#include <Preferences.h> //TODO: WIP
 
 #include "helpers.h"
 #include "global.h"
@@ -27,50 +14,71 @@ void startSoftAP();
 void setupWebServer();
 
 MFRC522 mfrc522; // Create MFRC522 instance
-Preferences preferences;
+
 
 HardwareSerial Serial1(1);
 
 void setup()
 {
-    EEPROM.begin(512);
     Serial.begin(9600);
     Serial1.begin(115200);
-    delay(10);
+    delay(100);
 
-    preferences.begin("KoffieID", false);
+    preferences.begin("KoffieID", false); // Start preference Library, false sets readOnly.
 
-    if (!ReadConfig())
+    // Start WiFi setup and stop doing anything else if WiFi is not setup.
+    if (preferences.getString("ssid").equals("") || preferences.getString("wpa2").equals(""))
     {
         startWiFiSetup();
         return;
     }
 
-    // We start by connecting to a WiFi network
+    // Enable a way to enable setup mode after setup.
+    if (!preferences.getBool("setup"))
+    {
+        Serial.println(F("\nSetup mode will be enabled if the ESP restarts within 5 seconds!"));
+        preferences.putBool("setup", true);
+        delay(5000);
+        preferences.putBool("setup", false);
+        Serial.println(F("Setup mode timeout has passed! - Starting normal!"));
+    }
 
+    // If setup mode is enabled.
+    if (preferences.getBool("setup"))
+    {
+        Serial.println(F("\n!!! SETUP MODE ENABLED !!!"));
+        WiFi.mode(WIFI_AP_STA);
+        startSoftAP();
+        setupWebServer();
+        Serial.println(F("!!! SETUP MODE ENABLED !!!\n"));
+    }
+
+    // Connect to WiFi network
     Serial.print("Connecting to ");
-    Serial.println(config.ssid);
+    Serial.println(preferences.getString("ssid"));
 
-    WiFi.begin(config.ssid.c_str(), config.password.c_str());
+    
+    // Start WiFi connecting process with setup connection details. 
+    WiFi.begin(preferences.getString("ssid").c_str(), preferences.getString("wpa2").c_str());
 
     int tick = 0;
     while (WiFi.status() != WL_CONNECTED)
     {
         if (tick == 60)
-        {
-            Serial.println();
-            Serial.println(F("No network has been found in 30 seconds! - Enabling setup aswell!"));
-            WiFi.mode(WIFI_AP_STA);
-            startSoftAP();
-            setupWebServer();
-        }
+            Serial.println(F("\nConnecting to network seems to be a problem?"));
 
         delay(500);
         Serial.print(".");
         tick++;
     }
 
-    WiFi.mode(WIFI_STA);
+    if (preferences.getBool("setup"))
+    {
+        Serial.println(F("Succesfully connected to network. Next reboot setup mode will be disabled!"));
+        preferences.putBool("setup", false);
+    }
+    else
+        WiFi.mode(WIFI_STA);
 
     Serial.println();
     Serial.println(F("WiFi connected"));
@@ -80,11 +88,6 @@ void setup()
     SPI.begin();                       // Init SPI bus
     mfrc522.PCD_Init();                // Init MFRC522
     mfrc522.PCD_DumpVersionToSerial(); // Show details of PCD - MFRC522 Card Reader details
-
-    //TODO: Remove this when done with coding.
-    WiFi.mode(WIFI_AP_STA);
-    startSoftAP();
-    setupWebServer();
 }
 
 String readWebsite(String UID)

@@ -14,6 +14,10 @@ void startSoftAP()
     WiFi.softAP(ACCESS_POINT_NAME, ACCESS_POINT_PASSWORD);
 
     IPAddress myIP = WiFi.softAPIP(); //Get IP address
+    Serial.print("HotSpot SSID: ");
+    Serial.println(ACCESS_POINT_NAME);
+    Serial.print("HotSpot PASSWD: ");
+    Serial.println(ACCESS_POINT_PASSWORD);
     Serial.print("HotSpot IP: ");
     Serial.println(myIP);
 }
@@ -34,12 +38,15 @@ void setupWebServer()
             String ssid = request->arg("ssid");
             String password = request->arg("password");
 
-            config.ssid = ssid;
-            config.password = password;
+            preferences.putString("ssid", ssid);
+            preferences.putString("wpa2", password);
+            //config.ssid = ssid;
+            //config.password = password;
 
             delay(500);
 
-            WriteConfig();
+            ESP.restart();
+            //WriteConfig();
         }
     });
 
@@ -54,7 +61,6 @@ void startWiFiSetup()
 {
     WiFi.mode(WIFI_AP);
     startSoftAP();
-
     setupWebServer();
 
     String connectMessage = "Please connect to $ssid WiFi - password:$password";
