@@ -1,5 +1,30 @@
 #include "SetupHelper.h"
 
+
+// Return true if network settings have been set.
+boolean SetupHelper::isNetworkSetup()
+{
+    return !(preferences.getString("ssid").equals("") && preferences.getString("wpa2").equals(""));
+}
+
+void SetupHelper::startDelay()
+{
+    Serial.println(F("\nSetup mode will be enabled if the ESP restarts within 3 seconds!"));
+    preferences.putBool("setup", true);
+    delay(3000);
+    preferences.putBool("setup", false);
+    Serial.println(F("Setup mode timeout has passed! - Starting normal!"));
+}
+
+void SetupHelper::enableSetupMode()
+{
+    Serial.println(F("\n!!! SETUP MODE ENABLED !!!"));
+    WiFi.mode(WIFI_AP_STA);
+    startSoftAP();
+    setupWebServer();
+    Serial.println(F("!!! SETUP MODE ENABLED !!!\n"));
+}
+
 void SetupHelper::startSoftAP()
 {
     WiFi.softAP(ACCESS_POINT_NAME, ACCESS_POINT_PASSWORD);

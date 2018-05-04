@@ -19,8 +19,10 @@ class SetupHelper
         void startSoftAP();
         void startWiFiSetup();
         void setupWebServer();
+        void startDelay();
+        void enableSetupMode();
+        boolean isNetworkSetup();
     private:
         
 
 };
-
