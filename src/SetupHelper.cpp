@@ -1,12 +1,4 @@
-#include <Arduino.h>
 #include "SetupHelper.h"
-
-//#include "page_admin.h"
-//#include "page_style.css.h"
-
-
-//#define ACCESS_POINT_NAME "KoffieID"
-//#define ACCESS_POINT_PASSWORD "KoffieConfig"
 
 void SetupHelper::startSoftAP()
 {
@@ -33,9 +25,6 @@ void SetupHelper::setupWebServer()
         if (args != 0)
         {
             request->send(200, "text/html", PAGE_WaitAndReload);
-
-            //Preferences preferences;
-            //preferences.begin("KoffieID", false); // Start preference Library, false sets readOnly.
 
             String ssid = request->arg("ssid");
             String password = request->arg("password");

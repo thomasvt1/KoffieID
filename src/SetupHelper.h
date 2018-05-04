@@ -3,7 +3,6 @@
 
 #include <Preferences.h>
 #include <ESPAsyncWebServer.h>
-#include <WiFi.h>
 
 #include "global.h"
 
@@ -12,7 +11,6 @@
 
 #define ACCESS_POINT_NAME "KoffieID"
 #define ACCESS_POINT_PASSWORD "KoffieConfig"
-
 
 
 class SetupHelper

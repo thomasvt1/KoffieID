@@ -7,15 +7,15 @@
 
 #include <MFRC522.h>
 
-MFRC522 mfrc522;
-HardwareSerial Serial1(1);
 
+HardwareSerial Serial1(1);
 AsyncWebServer server(80);
 Preferences preferences;
+MFRC522 mfrc522;
+
 
 int disallowedPins[] = {5, 18, 19, 22, 23};
 String lastUid = "";
-
 
 SetupHelper setuphelper;
 Network network;
