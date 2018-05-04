@@ -16,13 +16,13 @@ void CardReader::loop()
         rfidUid += String(mfrc522.uid.uidByte[i], HEX);
     }
 
+    mfrc522.PICC_HaltA(); // Done with RFID scanning.
+
     if (rfidUid.equals(lastUid)) //Check if this is a new cup, to prevent accidental double actions.
     {
         Serial.println(F("This tag has already been scanned!"));
         return;
     }
-
-    mfrc522.PICC_HaltA(); // Done with RFID scanning.
 
     Serial.print(F("Card scanned - "));
     Serial.println(rfidUid);
@@ -41,33 +41,25 @@ void CardReader::loop()
     if (root.containsKey("pin"))
     {
         Serial.println("json contains pin!");
-        //TODO: Move pin method here
+
+        int pin = root["pin"];
+
+        if (pin < 1 || pin > 35)     //Check if the given pin# is within the range of our ESP32
+        {
+            Serial.println(F("API tried to call pin thatis not in range!"));
+        }
+        else if (arrayIncludeElement(disallowedPins, pin))    //Check if the array is in the blacklist - for example pins used by the RFID reader.
+        {
+            Serial.println(F("API tried to call pin that is in blacklist!"));
+        }
+        else
+        {
+            pinMode(pin, OUTPUT);
+            digitalWrite(pin, HIGH);
+            delay(2000);
+            digitalWrite(pin, LOW);
+        }
     }
-
-    /*
-
-    int x = in.toInt();
-    Serial.println(in);
-
-    if (x < 1 || x > 35)     //Check if the given pin# is within the range of our ESP32
-    {
-        Serial.println(F("API tried to call pin thatis not in range!"));
-    }
-    else if (arrayIncludeElement(disallowedPins, x))    //Check if the array is in the blacklist - for example pins used by the RFID reader.
-    {
-        Serial.println(F("API tried to call pin that is in blacklist!"));
-    }
-    else
-    {
-        pinMode(x, OUTPUT);
-        digitalWrite(x, HIGH);
-        delay(2000);
-        digitalWrite(x, LOW);
-    }
-    */
-
-
-    
 }
 
 boolean CardReader::arrayIncludeElement(int array[], int element)
