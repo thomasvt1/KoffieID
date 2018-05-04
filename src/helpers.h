@@ -2,7 +2,6 @@
 
 boolean arrayIncludeElement(int array[], int element)
 {
-    //int max = sizeof(&array) / sizeof(&array[0]);
     int max = sizeof(&array) - 1;
 
     for (int i = 0; i < max; i++)

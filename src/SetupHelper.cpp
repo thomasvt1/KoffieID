@@ -1,15 +1,14 @@
 #include <Arduino.h>
+#include "SetupHelper.h"
 
-#include "helpers.h"
-#include "global.h"
+//#include "page_admin.h"
+//#include "page_style.css.h"
 
-#include "page_admin.h"
-#include "page_style.css.h"
 
-#define ACCESS_POINT_NAME "KoffieID"
-#define ACCESS_POINT_PASSWORD "KoffieConfig"
+//#define ACCESS_POINT_NAME "KoffieID"
+//#define ACCESS_POINT_PASSWORD "KoffieConfig"
 
-void startSoftAP()
+void SetupHelper::startSoftAP()
 {
     WiFi.softAP(ACCESS_POINT_NAME, ACCESS_POINT_PASSWORD);
 
@@ -22,7 +21,7 @@ void startSoftAP()
     Serial.println(myIP);
 }
 
-void setupWebServer()
+void SetupHelper::setupWebServer()
 {
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "text/html", PAGE_NetworkConfiguration);
@@ -35,18 +34,18 @@ void setupWebServer()
         {
             request->send(200, "text/html", PAGE_WaitAndReload);
 
+            //Preferences preferences;
+            //preferences.begin("KoffieID", false); // Start preference Library, false sets readOnly.
+
             String ssid = request->arg("ssid");
             String password = request->arg("password");
 
             preferences.putString("ssid", ssid);
             preferences.putString("wpa2", password);
-            //config.ssid = ssid;
-            //config.password = password;
 
             delay(500);
 
             ESP.restart();
-            //WriteConfig();
         }
     });
 
@@ -57,7 +56,7 @@ void setupWebServer()
     server.begin();
 }
 
-void startWiFiSetup()
+void SetupHelper::startWiFiSetup()
 {
     WiFi.mode(WIFI_AP);
     startSoftAP();

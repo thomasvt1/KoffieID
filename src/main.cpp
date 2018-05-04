@@ -1,22 +1,24 @@
 #include <Arduino.h>
-#include <WiFi.h>
-#include <SPI.h>     // RC522 Module uses SPI protocol
-#include <MFRC522.h> // Library for Mifare RC522 Devices
-#include <HTTPClient.h>
-
-#include "helpers.h"
 #include "global.h"
+#include <SPI.h>
 
-const char *host = "thomasvt.xyz";
+#include "Network.h"
+#include "SetupHelper.h"
 
-void startWiFiSetup();
-void startSoftAP();
-void setupWebServer();
+#include <MFRC522.h>
 
-MFRC522 mfrc522; // Create MFRC522 instance
-
-
+MFRC522 mfrc522;
 HardwareSerial Serial1(1);
+
+AsyncWebServer server(80);
+Preferences preferences;
+
+int disallowedPins[] = {5, 18, 19, 22, 23};
+String lastUid = "";
+
+
+SetupHelper setuphelper;
+Network network;
 
 void setup()
 {
@@ -29,7 +31,7 @@ void setup()
     // Start WiFi setup and stop doing anything else if WiFi is not setup.
     if (preferences.getString("ssid").equals("") || preferences.getString("wpa2").equals(""))
     {
-        startWiFiSetup();
+        setuphelper.startWiFiSetup();
         return;
     }
 
@@ -48,8 +50,8 @@ void setup()
     {
         Serial.println(F("\n!!! SETUP MODE ENABLED !!!"));
         WiFi.mode(WIFI_AP_STA);
-        startSoftAP();
-        setupWebServer();
+        setuphelper.startSoftAP();
+        setuphelper.setupWebServer();
         Serial.println(F("!!! SETUP MODE ENABLED !!!\n"));
     }
 
@@ -90,28 +92,18 @@ void setup()
     mfrc522.PCD_DumpVersionToSerial(); // Show details of PCD - MFRC522 Card Reader details
 }
 
-String readWebsite(String UID)
+boolean arrayIncludeElement(int array[], int element)
 {
-    HTTPClient http;
+    int max = sizeof(&array) - 1;
 
-    String url = "https://";
-    url += host;
-    url += "/api/koffieid.php?uid=";
-    url += UID;
-
-    http.begin(url);           //Specify the URL
-    int httpCode = http.GET(); //Make the request
-
-    if (httpCode > 0)
-        return http.getString();
-    else
-        Serial.println(F("Error on HTTP request"));
-
-    http.end(); //Free the resources
-    return "";
+    for (int i = 0; i < max; i++)
+    {
+        if (array[i] == element)
+            return true;
+    }
+    return false;
 }
 
-String lastUid = "";
 void loop()
 {
     if (!mfrc522.PICC_IsNewCardPresent())
@@ -130,12 +122,11 @@ void loop()
         rfidUid += String(mfrc522.uid.uidByte[i], HEX);
     }
 
-    int disallowedPins[] = {5, 18, 19, 22, 23};
-
-    if (!rfidUid.equals(lastUid))
+    if (!rfidUid.equals(lastUid)) //Check if this is a new cup, to prevent accidental double actions.
     {
         Serial.print(F("Card scanned - "));
-        String in = readWebsite(rfidUid);
+        String in = network.readWebsite(rfidUid);
+        
 
         lastUid = rfidUid;
 
