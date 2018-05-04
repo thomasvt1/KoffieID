@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include "global.h"
 #include <MFRC522.h>
+#include <ArduinoJson.h>
 
 class CardReader
 {

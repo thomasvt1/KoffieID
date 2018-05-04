@@ -8,7 +8,7 @@ void setup()
     Serial1.begin(115200);
     delay(100);
 
-    preferences.begin("KoffieID", false); // Start preference Library, false sets readOnly.
+    preferences.begin("KoffieID", false); // Start preference Library, false sets readOnly so config can be written.
 
     // Start WiFi setup and stop doing anything else if WiFi is not setup.
     if (!setuphelper.isNetworkSetup())

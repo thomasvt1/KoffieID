@@ -20,6 +20,7 @@ void SetupHelper::enableSetupMode()
 {
     Serial.println(F("\n!!! SETUP MODE ENABLED !!!"));
     WiFi.mode(WIFI_AP_STA);
+    WiFi.beginSmartConfig();
     startSoftAP();
     setupWebServer();
     Serial.println(F("!!! SETUP MODE ENABLED !!!\n"));
