@@ -40,7 +40,7 @@ void CardReader::loop()
 
     if (json.containsKey("pin"))
     {
-        Serial.println("json contains pin!");
+        Serial.println(F("json contains pin!");
 
         int pin = json["pin"];
 
