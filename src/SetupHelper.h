@@ -22,7 +22,4 @@ class SetupHelper
         void startDelay();
         void enableSetupMode();
         boolean isNetworkSetup();
-    private:
-        
-
 };

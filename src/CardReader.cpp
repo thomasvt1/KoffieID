@@ -68,7 +68,6 @@ void CardReader::loop()
             Serial1.println(cmd);
             delay(100);
         }
-        
     }
 }
 
