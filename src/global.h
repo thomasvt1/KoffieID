@@ -4,7 +4,8 @@
 #include <MFRC522.h>
 #include "Network.h"
 
-extern AsyncWebServer server;
+extern HardwareSerial Serial1;
 extern Preferences preferences;
+extern AsyncWebServer server;
 extern Network network;
 extern MFRC522 mfrc522;

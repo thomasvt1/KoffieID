@@ -36,13 +36,13 @@ void CardReader::loop()
 
     lastUid = rfidUid;
     DynamicJsonBuffer jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(in);
+    JsonObject& json = jsonBuffer.parseObject(in);
 
-    if (root.containsKey("pin"))
+    if (json.containsKey("pin"))
     {
         Serial.println("json contains pin!");
 
-        int pin = root["pin"];
+        int pin = json["pin"];
 
         if (pin < 1 || pin > 35)     //Check if the given pin# is within the range of our ESP32
         {
@@ -59,6 +59,16 @@ void CardReader::loop()
             delay(2000);
             digitalWrite(pin, LOW);
         }
+    }
+    else if (json.containsKey("serial"))
+    {
+        JsonArray& commands = json["serial"];
+        for (String cmd : commands){
+            Serial.println(cmd);
+            Serial1.println(cmd);
+            delay(100);
+        }
+        
     }
 }
 
