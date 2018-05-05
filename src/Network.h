@@ -1,8 +1,8 @@
 #pragma once
 #include <Arduino.h>
 #include <HTTPClient.h>
+#include "global.h"
 
-#define HOST "ip.thomasvt.xyz"
 
 class Network
 {

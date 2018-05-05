@@ -66,4 +66,3 @@ color: #fff;
 			max-width: 16em !important; } 
 	}
 )=====";
- 

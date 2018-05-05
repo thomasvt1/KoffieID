@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include "global.h"
+#include "local.h"
 #include <MFRC522.h>
 #include <ArduinoJson.h>
 

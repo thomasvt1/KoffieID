@@ -9,7 +9,7 @@ Network::Network()
 String Network::readWebsite(String UID)
 {
     String url = "https://";
-    url += HOST;
+    url += preferences.getString("domain");
     url += "/api/koffieid.php?uid=";
     url += UID;
 

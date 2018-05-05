@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "global.h"
+#include "local.h"
 #include "main.h"
 
 void setup()

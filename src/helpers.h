@@ -1,4 +1,5 @@
 #pragma once
+#include <Arduino.h>
 
 boolean arrayIncludeElement(int array[], int element)
 {

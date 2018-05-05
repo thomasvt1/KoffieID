@@ -8,6 +8,7 @@
 
 #include "page_admin.h"
 #include "page_style.css.h"
+#include "page_script.js.h"
 
 #define ACCESS_POINT_NAME "KoffieID"
 #define ACCESS_POINT_PASSWORD "KoffieConfig"

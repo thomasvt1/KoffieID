@@ -52,11 +52,9 @@ void SetupHelper::setupWebServer()
         {
             request->send(200, "text/html", PAGE_WaitAndReload);
 
-            String ssid = request->arg("ssid");
-            String password = request->arg("password");
-
-            preferences.putString("ssid", ssid);
-            preferences.putString("wpa2", password);
+            preferences.putString("ssid", request->arg("ssid"));
+            preferences.putString("wpa2", request->arg("password"));
+            preferences.putString("domain", request->arg("domain"));
 
             delay(500);
 
@@ -64,8 +62,23 @@ void SetupHelper::setupWebServer()
         }
     });
 
+    server.on("/api/config", HTTP_GET, [](AsyncWebServerRequest *request) {
+        String values = String();
+        values += "ssid|" + preferences.getString("ssid") +  "|input\n";
+        values += "domain|" + preferences.getString("domain") +  "|input\n";
+        request->send(200, "text/plain", values);
+    });
+
     server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(200, "text/css", PAGE_Style_css);
+    });
+
+    server.on("/microajax.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/plain", PAGE_microajax_js);
+    });
+
+    server.onNotFound([](AsyncWebServerRequest *request) {
+        request->send(404, "text/html", "Page not Found");
     });
 
     server.begin();
