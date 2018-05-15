@@ -9,6 +9,8 @@ class Network
     public:
         Network();
         String readWebsite(String UID);
+        void firstCheckWiFi();
+        void checkWiFi();
     private:
         HTTPClient http;
 };

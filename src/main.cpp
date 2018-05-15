@@ -34,17 +34,9 @@ void setup()
     
     // Start WiFi connecting process with setup connection details. 
     WiFi.begin(preferences.getString("ssid").c_str(), preferences.getString("wpa2").c_str());
+    WiFi.setAutoReconnect(true);
 
-    unsigned char tick = 0;
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        if (tick == 60)
-            Serial.println(F("\nConnecting to network seems to be a problem?"));
-
-        delay(500);
-        Serial.print(".");
-        tick++;
-    }
+    network.firstCheckWiFi();
 
     if (preferences.getBool("setup"))
     {
@@ -66,5 +58,7 @@ void setup()
 
 void loop()
 {
+    if (!preferences.getBool("setup"))
+        network.checkWiFi();
     cardreader.loop();
 }
