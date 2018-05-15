@@ -66,7 +66,7 @@ void CardReader::loop()
         for (String cmd : commands){
             Serial.println(cmd);
             Serial1.println(cmd);
-            delay(100);
+            delay(2000);
         }
     }
 }
