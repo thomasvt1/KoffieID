@@ -33,7 +33,7 @@ String Network::readWebsite(String UID)
 {
     String url = "https://";
     url += preferences.getString("domain");
-    url += "/api/koffieid.php?uid=";
+    url += "/api/special/";
     url += UID;
 
     http.begin(url);           // Specify the URL
