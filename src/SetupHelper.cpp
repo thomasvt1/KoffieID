@@ -24,6 +24,7 @@ void SetupHelper::enableSetupMode()
     startSoftAP();
     setupWebServer();
     Serial.println(F("!!! SETUP MODE ENABLED !!!\n"));
+    preferences.putBool("setup", false);
 }
 
 void SetupHelper::startSoftAP()
